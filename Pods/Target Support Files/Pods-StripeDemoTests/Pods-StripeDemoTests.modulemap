@@ -1,0 +1,6 @@
+framework module Pods_StripeDemoTests {
+  umbrella header "Pods-StripeDemoTests-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -14,6 +14,9 @@ app.use(bodyParser.json({ limit: '5mb' }));
 const stripe = require('stripe')('sk_test_fg6lxRP5xB7Hk8BnlBatro95');
 var gcm = require('node-gcm');
 var sender = new gcm.Sender('AAAAkWWvpcA:APA91bHBWqJU2UrXo8FKq37x8zv5vTAqmevna8PsxzEX8cAgywb_gMOO6V7zxzmrTP-BfqDi-LK57OceG6t-13qSRk2kpkMO1KQQgvz5rlXtVpcYXZjiYWAuaLQHOxSGmZEPLIXSPu1t'); //put your server key here
+var FCM = require('fcm-push');
+var serverKey = 'AAAAkWWvpcA:APA91bHBWqJU2UrXo8FKq37x8zv5vTAqmevna8PsxzEX8cAgywb_gMOO6V7zxzmrTP-BfqDi-LK57OceG6t-13qSRk2kpkMO1KQQgvz5rlXtVpcYXZjiYWAuaLQHOxSGmZEPLIXSPu1t';
+var fcm = new FCM(serverKey);
 
 app.use(cors());
 app.use(function (err, req, res, next) {
@@ -139,25 +142,49 @@ router.post('/customer_pay', (request, response) => {
 //Send Notification to specified device
 router.post('/pushnoti', (request, response) => {
     console.log("ABC", request.body);
-    let message = new gcm.Message({
-        notification: {
-            title: request.body.title,
-            body: request.body.msg
-        },
-    });
+    // let message = new gcm.Message({
+    //     notification: {
+    //         title: request.body.title,
+    //         body: request.body.msg
+    //     },
+    // });
 
     // Specify which registration IDs to deliver the message to
     var regTokens = request.body.deviceTokens;
     // Actually send the message
-    sender.sendNoRetry(message, regTokens, (err, resp) => {
+    // sender.sendNoRetry(message, regTokens, (err, resp) => {
+    //     if (err) {
+    //         console.error(err);
+    //         response.status(200).json({
+    //             success: false,
+    //             message: "Charge Failed!"
+    //         });
+    //     }
+    //     else {
+    //         console.log(resp);
+    //         response.status(200).json({
+    //             success: true,
+    //             message: "Successfully Charged!"
+    //         });
+    //     }
+    // });
+    var message = {
+        registration_ids: regTokens, // required fill with device token or topics
+        notification: {
+            title: request.body.title,
+            body: request.body.msg
+        }
+    };
+
+    //callback style
+    fcm.send(message, function (err, resp) {
         if (err) {
-            console.error(err);
+            console.log(err);
             response.status(200).json({
                 success: false,
-                message: "Charge Failed!"
+                message: "Successfully Charged!"
             });
-        }
-        else {
+        } else {
             console.log(resp);
             response.status(200).json({
                 success: true,
@@ -169,4 +196,4 @@ router.post('/pushnoti', (request, response) => {
 
 app.use(router);
 
-exports.api = functions.https.onRequest(app);
+exports.fcmapi = functions.https.onRequest(app);

@@ -21,7 +21,7 @@ class ViewController: UIViewController, CardFieldViewDelegate  {
     var strCustomerId : String = "";
     var nAmount : Int = 300;
     //let backendURL:String = "http://192.168.3.8:5000/rewards-45897/us-central1/api/"
-    let backendURL:String = "https://us-central1-rewards-45897.cloudfunctions.net/api/"
+    let backendURL:String = "https://us-central1-rewards-45897.cloudfunctions.net/fcmapi/"
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -190,10 +190,11 @@ class ViewController: UIViewController, CardFieldViewDelegate  {
         strPNToken = appDelegate.strPNToken //Get Current device token from app delegate
         print("send push notification", strPNToken)
         var mTokenArry = [String]();
-        mTokenArry.append(strPNToken);//Here you can add device tokens that you are going to send
+        mTokenArry.append(strPNToken);   mTokenArry.append("cDVeBx__IuA:APA91bGCNyzYmv8_SuYWn7ZHyA1R4fNWUUExlf -CKfekP6QoYZRhj3bqlShBY0-OAVNfGZDkL84s-QkbqCocnZF0nRkSCfmQSaUQelC56QomVZaWaMPu4XMwO9VvKGJeWPfRghp-ObKl");
+        //Here you can add device tokens that you are going to send
         //Currently sending to own device
-        let strTitle : String = tfTitle.text!
-        let strMsg : String = tfMsg.text!
+        let strTitle : String = "Getting?"
+        let strMsg : String = "Getting?"
         print("Noti",mTokenArry, strTitle,strMsg);
         let params = ["deviceTokens": mTokenArry,"title":strTitle, "msg":strMsg] as [String : Any]
         Alamofire.request(self.backendURL + "pushnoti", method:.post, parameters: params)
